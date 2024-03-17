@@ -84,4 +84,12 @@
     - name: Install required packages using Homebrew
       command: brew install {{ item }}
       with_items:
+        - git
+        - curl
+        - wget
+        - tmux
+        - zoxide
+        - fzf
+        - tree
+        - nethogs
         - zsh
