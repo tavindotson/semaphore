@@ -1,0 +1,56 @@
+- name: Get Some Server Information
+  hosts: all
+  gather_facts: yes
+  become: yes
+  vars:
+    ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+  tasks:
+    - name: Memory Above 85%
+      debug:
+        msg: "Memory Usage: {{ ansible_memtotal_mb - ansible_memfree_mb }} MB used out of {{ ansible_memtotal_mb }} MB total"
+      when: ansible_memtotal_mb > 0 and (ansible_memtotal_mb - ansible_memfree_mb) / ansible_memtotal_mb * 100 > 85
+      changed_when: ansible_memtotal_mb > 0 and (ansible_memtotal_mb - ansible_memfree_mb) / ansible_memtotal_mb * 100 > 85
+
+    - name: Swap Above 85%
+      debug:
+        msg: "Swap Usage: {{ ansible_swaptotal_mb - ansible_swapfree_mb }} MB used out of {{ ansible_swaptotal_mb }} MB total"
+      when: ansible_swaptotal_mb > 0 and (ansible_swaptotal_mb - ansible_swapfree_mb) / ansible_swaptotal_mb * 100 > 85
+      changed_when: ansible_swaptotal_mb > 0 and (ansible_swaptotal_mb - ansible_swapfree_mb) / ansible_swaptotal_mb * 100 > 85
+      ignore_errors: yes
+
+    - name: Memory Below 85%
+      debug:
+        msg: "Memory Usage: {{ ansible_memtotal_mb - ansible_memfree_mb }} MB used out of {{ ansible_memtotal_mb }} MB total"
+      when: ansible_memtotal_mb > 0 and (ansible_memtotal_mb - ansible_memfree_mb) / ansible_memtotal_mb * 100 <= 85
+      changed_when: false
+
+    - name: Swap Below 85%
+      debug:
+        msg: "Swap Usage: {{ ansible_swaptotal_mb - ansible_swapfree_mb }} MB used out of {{ ansible_swaptotal_mb }} MB total"
+      when: ansible_swaptotal_mb > 0 and (ansible_swaptotal_mb - ansible_swapfree_mb) / ansible_swaptotal_mb * 100 <= 85
+      changed_when: false
+      ignore_errors: yes
+
+    - name: Disk Usage
+      command: df -h /
+      register: disk_usage_output
+
+    - debug:
+        var: disk_usage_output.stdout_lines
+
+    - name: Sensor Data
+      command: sensors
+      register: temp_sensor_output
+      changed_when: false
+      ignore_errors: yes
+
+    - debug:
+        msg: "{{ temp_sensor_output.stdout }}"
+
+    - name: CPU Load
+      command: uptime
+      register: cpu_load_output
+      changed_when: false
+
+    - debug:
+        msg: "{{ cpu_load_output.stdout }}"
