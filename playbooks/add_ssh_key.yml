@@ -5,8 +5,16 @@
   vars:
     ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
   tasks:
-    - name: Add Jerry Public Key
+    - name: Fetch SSH keys from URL
+      uri:
+        url: "https://github.com/tavindotson.keys"
+        return_content: yes
+      register: fetched_keys
+
+    - name: Add SSH keys from URL
       ansible.posix.authorized_key:
         user: "{{ ansible_user }}"
         state: present
-        key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPHTaaz20YUzb4uGpzpScbsIxr4H79vbJRIANvroUu57 tjd@tavin.xyz"
+        key: "{{ item }}"
+      loop: "{{ fetched_keys.content | regex_replace('\n$', '') | split('\n') }}"
+      when: fetched_keys.status == 200
