@@ -6,19 +6,35 @@
     users_list:
       - tavin
   tasks:
-    - name: Create users and add to sudo group
+    - name: Create users
       user:
         name: "{{ item }}"
         state: present
         shell: /bin/zsh
         createhome: yes
-        groups: sudo
         append: yes
         generate_ssh_key: true
         update_password: on_create
         create_home: true
       with_items: "{{ users_list }}"
-      ignore_errors: yes
+
+    - name: Create users and add to wheel group (apk only)
+      user:
+        name: "{{ item }}"
+        state: present
+        groups: wheel
+        append: yes
+      with_items: "{{ users_list }}"
+      when: "'linux_apk' in group_names"
+
+    - name: Create users and add to sudo group (apt only)
+      user:
+        name: "{{ item }}"
+        state: present
+        groups: sudo
+        append: yes
+      with_items: "{{ users_list }}"
+      when: "'linux_apt' in group_names"
 
     - name: Add Jerry Public Key
       ansible.posix.authorized_key:
@@ -26,7 +42,6 @@
         state: present
         key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPHTaaz20YUzb4uGpzpScbsIxr4H79vbJRIANvroUu57 tjd@tavin.xyz"
       with_items: "{{ users_list }}"
-      ignore_errors: yes
 
     - name: Create sudoers file for passwordless sudo (tavin only)
       copy:
@@ -34,7 +49,6 @@
         content: "tavin ALL=(ALL) NOPASSWD:ALL"
         validate: "visudo -cf %s"
       when: "'linux_apt' in group_names"
-      ignore_errors: yes
 
     - name: Add .hushlogin to users' home folders
       copy:
