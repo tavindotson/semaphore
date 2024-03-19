@@ -37,10 +37,8 @@
       ignore_errors: yes
 
     - name: Add .hushlogin to users' home folders
-      become: yes
-      become_user: "{{ item }}"
       copy:
-        dest: "{{ lookup('env', 'HOME') }}/.hushlogin"
+        dest: "/home/{{ item }}/.hushlogin"
         content: ""
       with_items: "{{ users_list }}"
       ignore_errors: yes
