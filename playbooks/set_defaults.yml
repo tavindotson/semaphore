@@ -6,7 +6,6 @@
     users_list:
       - tavin
       - root
-
   tasks:
     - name: Update APT package cache
       apt:
@@ -48,6 +47,12 @@
       register: ohmyzsh_result
       failed_when: "'FAILED' in ohmyzsh_result.stderr"
 
+    - name: Create sudoers file for passwordless sudo
+      copy:
+        dest: /etc/sudoers.d/tavin-user
+        content: "tavin ALL=(ALL) NOPASSWD:ALL"
+        validate: "visudo -cf %s"
+
 - name: Set default shell to zsh for specified users and install Oh My Zsh
   hosts: linux_apk
   become: yes
@@ -56,7 +61,6 @@
     users_list:
       - tavin
       - root
-
   tasks:
     - name: Update APK package cache
       apk:
@@ -96,3 +100,9 @@
       with_items: "{{ users_list }}"
       register: ohmyzsh_result
       failed_when: "'FAILED' in ohmyzsh_result.stderr"
+
+    - name: Create sudoers file for passwordless sudo
+      copy:
+        dest: /etc/sudoers.d/tavin-user
+        content: "tavin ALL=(ALL) NOPASSWD:ALL"
+        validate: "visudo -cf %s"

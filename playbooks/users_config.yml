@@ -1,0 +1,24 @@
+- name: Create Users
+  hosts: linux_apt
+  become: yes
+  gather_facts: no
+  vars:
+    users_list:
+      - tavin
+  tasks:
+    - name: Create users and add to sudo group
+      user:
+        name: "{{ item }}"
+        state: present
+        shell: /bin/zsh
+        createhome: yes
+        groups: sudo
+        append: yes
+      with_items: "{{ users_list }}"
+
+    - name: Add Jerry Public Key
+      ansible.posix.authorized_key:
+        user: "{{ item }}"
+        state: present
+        key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPHTaaz20YUzb4uGpzpScbsIxr4H79vbJRIANvroUu57 tjd@tavin.xyz"
+      with_items: "{{ users_list }}"
