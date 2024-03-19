@@ -11,11 +11,12 @@
         name: "{{ item }}"
         state: present
         shell: /bin/zsh
-        createhome: yes
+        createhome: true
+        create_home: true
         append: yes
         generate_ssh_key: true
         update_password: on_create
-        create_home: true
+
       with_items: "{{ users_list }}"
 
     - name: Create users and add to wheel group (apk only)
