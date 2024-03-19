@@ -16,6 +16,7 @@
         append: yes
         generate_ssh_key: true
         update_password: on_create
+        create_home: true
       with_items: "{{ users_list }}"
       ignore_errors: yes
 
@@ -32,11 +33,14 @@
         dest: /etc/sudoers.d/tavin-user
         content: "tavin ALL=(ALL) NOPASSWD:ALL"
         validate: "visudo -cf %s"
+      when: "'linux_apt' in group_names"
       ignore_errors: yes
 
     - name: Add .hushlogin to users' home folders
+      become: yes
+      become_user: "{{ item }}"
       copy:
-        dest: "/home/{{ item }}/.hushlogin"
+        dest: "{{ lookup('env', 'HOME') }}/.hushlogin"
         content: ""
       with_items: "{{ users_list }}"
       ignore_errors: yes
