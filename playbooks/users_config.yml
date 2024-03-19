@@ -1,5 +1,5 @@
 - name: Create Users
-  hosts: linux_apt
+  hosts: linux_apt:linux_apk
   become: yes
   gather_facts: no
   vars:
@@ -14,6 +14,8 @@
         createhome: yes
         groups: sudo
         append: yes
+        generate_ssh_key: true
+        update_password: on_create
       with_items: "{{ users_list }}"
 
     - name: Add Jerry Public Key
@@ -21,4 +23,16 @@
         user: "{{ item }}"
         state: present
         key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPHTaaz20YUzb4uGpzpScbsIxr4H79vbJRIANvroUu57 tjd@tavin.xyz"
+      with_items: "{{ users_list }}"
+
+    - name: Create sudoers file for passwordless sudo (tavin only)
+      copy:
+        dest: /etc/sudoers.d/tavin-user
+        content: "tavin ALL=(ALL) NOPASSWD:ALL"
+        validate: "visudo -cf %s"
+
+    - name: Add .hushlogin to users' home folders
+      copy:
+        dest: "/home/{{ item }}/".hushlogin
+        content: ""
       with_items: "{{ users_list }}"
