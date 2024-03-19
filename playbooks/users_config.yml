@@ -16,7 +16,6 @@
         append: yes
         generate_ssh_key: true
         update_password: on_create
-
       with_items: "{{ users_list }}"
 
     - name: Create users and add to wheel group (apk only)
