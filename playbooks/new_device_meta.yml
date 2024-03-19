@@ -1,0 +1,22 @@
+- name: New Device Order
+  hosts: all
+  gather_facts: yes
+  become: yes
+  vars:
+    ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+  tasks:
+    - name: Run ping.yml (1/4)
+      include_playbook:
+        playbook: ping.yml
+
+    - name: Run update_upgrade.yml (2/4)
+      include_playbook:
+        playbook: update_upgrade.yml
+
+    - name: Run users_config.yml (3/4)
+      include_playbook:
+        playbook: users_config.yml
+
+    - name: Run set_defaults.yml (4/4)
+      include_playbook:
+        playbook: set_defaults.yml
