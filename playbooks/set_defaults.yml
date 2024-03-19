@@ -5,6 +5,7 @@
   vars:
     users_list:
       - tavin
+      - root
 
   tasks:
     - name: Update APT package cache
@@ -23,16 +24,64 @@
         shell: /bin/zsh
       with_items: "{{ users_list }}"
 
-    - name: Install dependencies for Oh My Zsh
-      become: yes
+    - name: Install required packages
       apt:
-        name: "{{ item }}"
+        name:
+          - git
+          - curl
+          - wget
+          - zsh
+        update_cache: yes
         state: present
-      with_items:
-        - git
-        - curl
-        - wget
-        - zsh
+
+    - name: Download Oh My Zsh installation script
+      get_url:
+        url: https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh
+        dest: /tmp/install_ohmyzsh.sh
+        mode: "u=rwx,g=rx,o=rx"
+
+    - name: Run Oh My Zsh installation script for each user
+      become: yes
+      become_user: "{{ item }}"
+      shell: sh /tmp/install_ohmyzsh.sh --unattended
+      with_items: "{{ users_list }}"
+      register: ohmyzsh_result
+      failed_when: "'FAILED' in ohmyzsh_result.stderr"
+
+- name: Set default shell to zsh for specified users and install Oh My Zsh
+  hosts: linux_apk
+  become: yes
+  gather_facts: no
+  vars:
+    users_list:
+      - tavin
+      - root
+
+  tasks:
+    - name: Update APK package cache
+      apk:
+        update_cache: yes
+      register: apk_update_result
+
+    - name: Ensure zsh is installed
+      apk:
+        name: zsh
+        state: present
+
+    - name: Set default shell to zsh for users
+      user:
+        name: "{{ item }}"
+        shell: /bin/zsh
+      with_items: "{{ users_list }}"
+
+    - name: Install required packages
+      apk:
+        name:
+          - git
+          - curl
+          - wget
+          - zsh
+        state: present
 
     - name: Download Oh My Zsh installation script
       get_url:
