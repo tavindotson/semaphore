@@ -33,6 +33,6 @@
 
     - name: Add .hushlogin to users' home folders
       copy:
-        dest: "/home/{{ item }}/".hushlogin
+        dest: "/home/{{ item }}/.hushlogin"
         content: ""
       with_items: "{{ users_list }}"
