@@ -1,0 +1,9 @@
+- name: Set Defaults
+  hosts: linux_apt
+  gather_facts: no
+  become: yes
+  vars:
+    ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+  tasks:
+    - name: Add user with default options and zsh shell
+      command: sudo adduser -D -s /bin/zsh
