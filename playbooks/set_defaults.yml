@@ -1,4 +1,4 @@
-- name: Set default shell to zsh for specified users and install Oh My Zsh
+- name: Set defaults for Linux APT
   hosts: linux_apt
   become: yes
   gather_facts: no
@@ -47,7 +47,15 @@
       register: ohmyzsh_result
       failed_when: "'FAILED' in ohmyzsh_result.stderr"
 
-- name: Set default shell to zsh for specified users and install Oh My Zsh
+    - name: Ensure g-d script exists
+      copy:
+        content: |
+          #!/usr/bin/env bash
+          docker run --rm -e TZ="${TZ}" -v /var/run/docker.sock:/var/run/docker.sock:ro -v /run/user/1000/podman/podman.sock:/run/user/1000/podman/podman.sock:ro --pid host --network host -it nicolargo/glances:latest-full
+        dest: /usr/local/bin/g-d
+        mode: '0755'
+
+- name: Set defaults for Linux APK
   hosts: linux_apk
   become: yes
   gather_facts: no
@@ -94,3 +102,11 @@
       with_items: "{{ users_list }}"
       register: ohmyzsh_result
       failed_when: "'FAILED' in ohmyzsh_result.stderr"
+
+    - name: Ensure g-d script exists
+      copy:
+        content: |
+          #!/usr/bin/env bash
+          docker run --rm -e TZ="${TZ}" -v /var/run/docker.sock:/var/run/docker.sock:ro -v /run/user/1000/podman/podman.sock:/run/user/1000/podman/podman.sock:ro --pid host --network host -it nicolargo/glances:latest-full
+        dest: /usr/local/bin/g-d
+        mode: '0755'
