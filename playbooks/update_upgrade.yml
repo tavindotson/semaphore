@@ -30,6 +30,8 @@
           - nethogs
           - zsh
           - needrestart
+          - apt-offline
+          - glances
         update_cache: yes
         state: present
 
