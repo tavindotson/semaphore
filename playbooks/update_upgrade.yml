@@ -32,6 +32,7 @@
           - needrestart
           - apt-offline
           - glances
+          - speedtest-cli
         update_cache: yes
         state: present
 
