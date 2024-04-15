@@ -33,6 +33,7 @@
           - apt-offline
           - glances
           - speedtest-cli
+          - thefuck
         update_cache: yes
         state: present
 
@@ -98,3 +99,4 @@
         - tree
         - nethogs
         - zsh
+        - thefuck
