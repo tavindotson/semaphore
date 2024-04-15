@@ -31,7 +31,6 @@
           - zsh
           - needrestart
           - apt-offline
-          - glances
           - speedtest-cli
           - thefuck
         update_cache: yes
