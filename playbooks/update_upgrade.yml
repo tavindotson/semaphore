@@ -1,7 +1,7 @@
 - name: Update Linux devices using APT
   hosts: linux_apt
-  gather_facts: no
-  become: yes
+  gather_facts: false
+  become: true
   vars:
     ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
   tasks:
@@ -33,6 +33,7 @@
           - apt-offline
           - speedtest-cli
           - thefuck
+          - tldr
         update_cache: yes
         state: present
 
@@ -48,8 +49,8 @@
 
 - name: Update Linux devices using APK
   hosts: linux_apk
-  gather_facts: no
-  become: yes
+  gather_facts: false
+  become: true
   vars:
     ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
   tasks:
@@ -78,7 +79,7 @@
 
 - name: Update Mac devices using BREW
   hosts: mac_brew
-  gather_facts: no
+  gather_facts: false
   vars:
     ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
   tasks:
