@@ -40,12 +40,10 @@
     - name: Clean APT cache
       apt:
         autoclean: yes
-      when: apt_upgrade_result.changed
 
     - name: Remove unused packages
       apt:
         autoremove: yes
-      when: apt_upgrade_result.changed
 
 - name: Update Linux devices using APK
   hosts: linux_apk
