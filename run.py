@@ -11,7 +11,7 @@ def select_playbook(yaml_files):
     for idx, playbook in enumerate(yaml_files, start=1):
         print(f"{idx}. {playbook}")
     print("-" * 30)  # separator line
-    
+
     while True:
         try:
             selection = int(input("\nEnter the number of the playbook to run: "))
@@ -33,9 +33,11 @@ def main():
     if not yaml_files:
         print("No YAML files found in the playbook folder.")
         return
-    
+
+    # Sort the yaml files alphabetically
+    yaml_files.sort()
     selected_playbook = select_playbook(yaml_files)
     run_playbook(os.path.join(playbook_folder, selected_playbook))
-    
+
 if __name__ == "__main__":
     main()
