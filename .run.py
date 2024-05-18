@@ -33,6 +33,7 @@ def run_playbook(playbook):
 
 def handle_sigint(signal, frame):
     """Handles the SIGINT signal (Ctrl+C)."""
+    print("")
     print("\nOperation interrupted by user. Exiting...")
     sys.exit(0)
 
