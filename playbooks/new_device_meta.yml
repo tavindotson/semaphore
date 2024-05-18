@@ -1,5 +1,0 @@
----
-- import_playbook: ping.yml
-- import_playbook: update_upgrade.yml
-- import_playbook: users_config.yml
-- import_playbook: set_defaults.yml
