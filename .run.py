@@ -1,4 +1,6 @@
 import os
+import signal
+import sys
 
 def list_yaml_files(folder):
     """Returns a list of .yml files in the specified folder."""
@@ -21,12 +23,22 @@ def select_playbook(yaml_files):
                 print("Invalid selection. Please choose a number from the list.")
         except ValueError:
             print("Invalid input. Please enter a valid number.")
+        except KeyboardInterrupt:
+            print("\nOperation cancelled by user. Exiting...")
+            sys.exit(0)
 
 def run_playbook(playbook):
     """Runs the selected playbook using ansible-playbook."""
     os.system(f'ansible-playbook -i hosts.yml "{playbook}"')
 
+def handle_sigint(signal, frame):
+    """Handles the SIGINT signal (Ctrl+C)."""
+    print("\nOperation interrupted by user. Exiting...")
+    sys.exit(0)
+
 def main():
+    signal.signal(signal.SIGINT, handle_sigint)  # Registering the signal handler
+
     playbook_folder = "playbooks"
     yaml_files = list_yaml_files(playbook_folder)
 
