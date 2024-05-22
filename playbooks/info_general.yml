@@ -1,7 +1,7 @@
 - name: Get Some Server Information
   hosts: all
-  gather_facts: yes
-  become: yes
+  gather_facts: true
+  become: true
   vars:
     ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
   tasks:
@@ -16,7 +16,7 @@
         msg: "Swap Usage: {{ ansible_swaptotal_mb - ansible_swapfree_mb }} MB used out of {{ ansible_swaptotal_mb }} MB total"
       when: ansible_swaptotal_mb > 0 and (ansible_swaptotal_mb - ansible_swapfree_mb) / ansible_swaptotal_mb * 100 > 85
       changed_when: ansible_swaptotal_mb > 0 and (ansible_swaptotal_mb - ansible_swapfree_mb) / ansible_swaptotal_mb * 100 > 85
-      ignore_errors: yes
+      ignore_errors: true
 
     - name: Memory Below 85%
       debug:
@@ -29,7 +29,7 @@
         msg: "Swap Usage: {{ ansible_swaptotal_mb - ansible_swapfree_mb }} MB used out of {{ ansible_swaptotal_mb }} MB total"
       when: ansible_swaptotal_mb > 0 and (ansible_swaptotal_mb - ansible_swapfree_mb) / ansible_swaptotal_mb * 100 <= 85
       changed_when: false
-      ignore_errors: yes
+      ignore_errors: true
 
     - name: Disk Usage
       command: df -h /
@@ -42,7 +42,7 @@
       command: sensors
       register: temp_sensor_output
       changed_when: false
-      ignore_errors: yes
+      ignore_errors: true
 
     - debug:
         msg: "{{ temp_sensor_output.stdout }}"
