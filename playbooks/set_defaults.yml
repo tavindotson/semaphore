@@ -47,13 +47,11 @@
       register: ohmyzsh_result
       failed_when: "'FAILED' in ohmyzsh_result.stderr"
 
-    - name: Ensure g-d script exists
-      copy:
-        content: |
-          #!/usr/bin/env bash
-          docker run --rm -e TZ="${TZ}" -v /var/run/docker.sock:/var/run/docker.sock:ro -v /run/user/1000/podman/podman.sock:/run/user/1000/podman/podman.sock:ro --pid host --network host -it nicolargo/glances:latest-full
-        dest: /usr/local/bin/g-d
-        mode: '0755'
+    - name: Ensure alias apt="sudo nala" exists in /home/tavin/.zshrc
+      lineinfile:
+        path: /home/tavin/.zshrc
+        state: present
+        line: 'alias apt="sudo nala"'
 
 - name: Set defaults for Linux APK
   hosts: linux_apk
@@ -103,10 +101,8 @@
       register: ohmyzsh_result
       failed_when: "'FAILED' in ohmyzsh_result.stderr"
 
-    - name: Ensure g-d script exists
-      copy:
-        content: |
-          #!/usr/bin/env bash
-          docker run --rm -e TZ="${TZ}" -v /var/run/docker.sock:/var/run/docker.sock:ro -v /run/user/1000/podman/podman.sock:/run/user/1000/podman/podman.sock:ro --pid host --network host -it nicolargo/glances:latest-full
-        dest: /usr/local/bin/g-d
-        mode: '0755'
+    - name: Ensure alias apt="sudo nala" exists in /home/tavin/.zshrc
+      lineinfile:
+        path: /home/tavin/.zshrc
+        state: present
+        line: 'alias apt="sudo nala"'
