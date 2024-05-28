@@ -48,10 +48,14 @@
       failed_when: "'FAILED' in ohmyzsh_result.stderr"
 
     - name: Ensure alias apt="sudo nala" exists in /home/tavin/.zshrc
+      #become: yes
+      #become_user: "{{ item }}"
+      #with_items: "{{ users_list }}"
       lineinfile:
-        path: /home/tavin/.zshrc
+        path: "/home/tavin/.zshrc"
         state: present
         line: 'alias apt="sudo nala"'
+      ignore_errors: true
 
 - name: Set defaults for Linux APK
   hosts: linux_apk
@@ -100,9 +104,3 @@
       with_items: "{{ users_list }}"
       register: ohmyzsh_result
       failed_when: "'FAILED' in ohmyzsh_result.stderr"
-
-    - name: Ensure alias apt="sudo nala" exists in /home/tavin/.zshrc
-      lineinfile:
-        path: /home/tavin/.zshrc
-        state: present
-        line: 'alias apt="sudo nala"'
