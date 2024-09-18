@@ -1,0 +1,134 @@
+---
+- name: Automate system setup
+  hosts: localhost
+
+  vars:
+    user: "{{ ansible_env.USER }}"
+
+  vars_prompt:
+    - name: "device_hostname"
+      prompt: "Please provide the device hostname"
+      private: no
+
+  tasks:
+    - name: Ensure SSH keys exist by running ssh-keygen
+      ansible.builtin.openssh_keypair:
+        path: "/home/{{ user }}/.ssh/id_rsa"
+        state: present
+        type: rsa
+        force: false
+      become: no
+
+    - name: Ensure public key is added to authorized_keys (if missing)
+      ansible.builtin.lineinfile:
+        path: "/home/{{ user }}/.ssh/authorized_keys"
+        line: "{{ lookup('file', '/home/{{ user }}/.ssh/id_rsa.pub') }}"
+        create: yes
+        mode: "0600"
+        state: present
+        insertafter: EOF
+      become: no
+
+    - name: Create .hushlogin to disable system message on login
+      ansible.builtin.file:
+        path: "/home/{{ user }}/.hushlogin"
+        state: touch
+      become: no
+
+    - name: Remove /etc/motd to prevent message of the day display
+      ansible.builtin.file:
+        path: /etc/motd
+        state: absent
+      become: yes
+
+    - name: Configure sudoers file for current user
+      ansible.builtin.copy:
+        dest: "/etc/sudoers.d/{{ user }}"
+        content: |
+          {{ user }} ALL=(ALL) NOPASSWD:ALL
+        mode: "0440"
+      become: yes
+
+    - name: Update apt cache and install necessary packages
+      apt:
+        update_cache: yes
+        name:
+          - ufw
+          - avahi-daemon
+          - zsh
+          - fzf
+          - zoxide
+        state: present
+      become: yes
+
+    - name: Set device hostname
+      ansible.builtin.hostname:
+        name: "{{ device_hostname }}"
+      become: yes
+
+    - name: Update /etc/hosts with the device hostname
+      ansible.builtin.lineinfile:
+        path: /etc/hosts
+        line: "127.0.1.1 {{ device_hostname }}"
+        state: present
+      become: yes
+
+    - name: Allow ssh, http, and https through the firewall
+      ufw:
+        rule: allow
+        port: "{{ item }}"
+      loop:
+        - ssh
+        - http
+        - https
+      become: yes
+
+    - name: Enable UFW
+      ufw:
+        state: enabled
+      become: yes
+
+    - name: Configure SSHD to tighten security
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        line: "{{ item }}"
+        create: yes
+      loop:
+        - "PermitRootLogin no"
+      become: yes
+
+    - name: Restart SSH service
+      ansible.builtin.service:
+        name: ssh
+        state: restarted
+      become: yes
+
+    - name: Install Oh My Zsh for the user
+      ansible.builtin.shell: |
+        RUNZSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+      args:
+        chdir: /home/{{ user }}
+      become: no
+      ignore_errors: yes
+      register: zsh_install_result
+
+    - name: Set fact if oh-my-zsh installation completed successfully
+      ansible.builtin.set_fact:
+        oh_my_zsh_installed: "{{ zsh_install_result.rc == 0 }}"
+      become: no
+
+    - name: Clone zsh-syntax-highlighting plugin
+      ansible.builtin.git:
+        repo: https://github.com/zsh-users/zsh-syntax-highlighting.git
+        dest: /home/{{ user }}/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
+        version: master
+      become: no
+      when: oh_my_zsh_installed
+
+    - name: Clone zsh-autosuggestions plugin
+      ansible.builtin.git:
+        repo: https://github.com/zsh-users/zsh-autosuggestions.git
+        dest: /home/{{ user }}/.oh-my-zsh/custom/plugins/zsh-autosuggestions
+        version: master
+      become: no
+      when: oh_my_zsh_installed
