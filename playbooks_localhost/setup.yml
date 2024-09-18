@@ -95,6 +95,7 @@
         create: yes
       loop:
         - "PermitRootLogin no"
+        - "PasswordAuthentication no"
       become: yes
 
     - name: Restart SSH service
