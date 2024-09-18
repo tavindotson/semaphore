@@ -11,7 +11,7 @@
       private: no
 
     - name: "github_username"
-      prompt: "Please enter your GitHub username:"
+      prompt: "Please enter your GitHub username"
       private: no # Set 'no' to display the input
 
   tasks:
