@@ -6,6 +6,9 @@ This repo is not optimized for anyone to use; I hardcoded some SSH public keys a
 
 `./playbooks_localhost` folder should for for anyone.
 
+You can start the `.run.py` file directly, the start script will evolve to do checks
+before running the playbooks.
+
 ## Requirements
 
 - Debian or Ubuntu based Linux
