@@ -1,5 +1,16 @@
 # semaphore
 
+## Warning
+
+This repo is not optimized for anyone to use; I hardcoded some SSH public keys and user names. I will update it in the future to be usable by more people.
+
+`./playbooks_localhost` folder should for for anyone.
+
+## Requirments
+
+- Debian or Ubuntu based Linux
+- Ansible
+
 ## If you want to setup or get info from remote hosts
 
 1. Clone this repo and enter into it
