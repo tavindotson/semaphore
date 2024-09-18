@@ -126,13 +126,18 @@
         state: restarted
       become: yes
 
+    - name: Check if Oh My Zsh is already installed
+      ansible.builtin.stat:
+        path: /home/{{ user }}/.oh-my-zsh
+      register: ohmyzsh_installed
+
     - name: Install Oh My Zsh for the user
       ansible.builtin.shell: |
         RUNZSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
       args:
         chdir: /home/{{ user }}
+      when: not ohmyzsh_installed.stat.exists
       become: no
-      ignore_errors: yes
 
     - name: Clone zsh-syntax-highlighting plugin
       ansible.builtin.git:
