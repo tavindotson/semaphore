@@ -33,8 +33,6 @@
         insertafter: EOF
       become: no
 
-      
-
     - name: Fetch public SSH keys from the GitHub API
       uri:
         url: "https://api.github.com/users/{{ github_username }}/keys"
