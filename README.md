@@ -11,7 +11,7 @@ before running the playbooks.
 
 ## Requirements
 
-- Debian or Ubuntu based Linux
+- Fresh install of Debian or Ubuntu based Linux
 - Ansible
 
 ## If you want to setup or get info from remote hosts
