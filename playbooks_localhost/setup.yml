@@ -86,6 +86,8 @@
           - wget
           - git
           - speedtest-cli
+          - dnsutils
+          - pciutils
         state: present
       become: yes
 
