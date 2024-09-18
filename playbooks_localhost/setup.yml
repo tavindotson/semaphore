@@ -17,7 +17,7 @@
   tasks:
     - name: Ensure SSH keys exist by running ssh-keygen
       ansible.builtin.openssh_keypair:
-        path: "/home/{{ user }}/.ssh/id_rsa"clear
+        path: "/home/{{ user }}/.ssh/id_rsa"
         state: present
         type: rsa
         force: false
@@ -32,6 +32,8 @@
         state: present
         insertafter: EOF
       become: no
+
+      
 
     - name: Fetch public SSH keys from the GitHub API
       uri:
