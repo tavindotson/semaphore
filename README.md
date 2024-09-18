@@ -2,11 +2,11 @@
 
 ## Warning
 
-This repo is not optimized for anyone to use; I hardcoded some SSH public keys and user names. I will update it in the future to be usable by more people.
+This repo is not optimized for anyone to use; I hardcoded some SSH public keys and user names. I will update it in the future to be more usable.
 
 `./playbooks_localhost` folder should for for anyone.
 
-## Requirments
+## Requirements
 
 - Debian or Ubuntu based Linux
 - Ansible
