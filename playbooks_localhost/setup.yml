@@ -10,6 +10,10 @@
       prompt: "Please provide the device hostname"
       private: no
 
+    - name: "github_username"
+      prompt: "Please enter your GitHub username:"
+      private: no # Set 'no' to display the input
+
   tasks:
     - name: Ensure SSH keys exist by running ssh-keygen
       ansible.builtin.openssh_keypair:
@@ -27,6 +31,24 @@
         mode: "0600"
         state: present
         insertafter: EOF
+      become: no
+
+    - name: Fetch public SSH keys from the GitHub API
+      uri:
+        url: "https://api.github.com/users/{{ github_username }}/keys"
+        validate_certs: yes
+        return_content: yes
+      register: github_ssh_keys_response
+
+    - name: Add GitHub public SSH keys to authorized_keys
+      ansible.builtin.lineinfile:
+        path: "/home/{{ user }}/.ssh/authorized_keys"
+        line: "{{ item.key }}"
+        state: present
+        mode: "0600"
+        create: yes
+        insertafter: EOF
+      loop: "{{ github_ssh_keys_response.json }}"
       become: no
 
     - name: Create .hushlogin to disable system message on login
