@@ -12,7 +12,7 @@
 
     - name: "github_username"
       prompt: "Please enter your GitHub username"
-      private: no # Set 'no' to display the input
+      private: no
 
   tasks:
     - name: Ensure SSH keys exist by running ssh-keygen
