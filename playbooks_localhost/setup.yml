@@ -80,7 +80,20 @@
           - zsh
           - fzf
           - zoxide
+          - htop
+          - btop
+          - curl
+          - wget
+          - git
+          - speedtest-cli
         state: present
+      become: yes
+
+    - name: Upgrade all packages
+      apt:
+        upgrade: dist
+        autoclean: yes
+        autoremove: yes
       become: yes
 
     - name: Set device hostname
