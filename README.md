@@ -2,7 +2,7 @@
 
 ## Warning
 
-This repo is not optimized for anyone to use; I hardcoded some SSH public keys and user names. I will update it in the future to be more usable.
+This repo is not optimized for anyone to use; I hardcoded some SSH public keys and user names. I will update it in the future to be more usable. It will change dramatically over time.
 
 `./playbooks_localhost` folder should for for anyone.
 
