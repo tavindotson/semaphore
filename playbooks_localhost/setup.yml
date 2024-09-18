@@ -17,7 +17,7 @@
   tasks:
     - name: Ensure SSH keys exist by running ssh-keygen
       ansible.builtin.openssh_keypair:
-        path: "/home/{{ user }}/.ssh/id_rsa"
+        path: "/home/{{ user }}/.ssh/id_rsa"clear
         state: present
         type: rsa
         force: false
@@ -133,12 +133,6 @@
         chdir: /home/{{ user }}
       become: no
       ignore_errors: yes
-      register: zsh_install_result
-
-    - name: Set fact if oh-my-zsh installation completed successfully
-      ansible.builtin.set_fact:
-        oh_my_zsh_installed: "{{ zsh_install_result.rc == 0 }}"
-      become: no
 
     - name: Clone zsh-syntax-highlighting plugin
       ansible.builtin.git:
@@ -146,7 +140,6 @@
         dest: /home/{{ user }}/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
         version: master
       become: no
-      when: oh_my_zsh_installed
 
     - name: Clone zsh-autosuggestions plugin
       ansible.builtin.git:
@@ -154,4 +147,3 @@
         dest: /home/{{ user }}/.oh-my-zsh/custom/plugins/zsh-autosuggestions
         version: master
       become: no
-      when: oh_my_zsh_installed
