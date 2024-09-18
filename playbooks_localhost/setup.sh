@@ -2,6 +2,8 @@
 
 echo "Create a user first, then run this as the user you want to setup."
 
+sleep 3
+
 read -p "Are you sure you want to continue? [y/N] " -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
