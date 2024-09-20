@@ -13,4 +13,6 @@ else
     exit 1
 fi
 
+sudo apt update
+sudo apt install ansible -y
 ansible-playbook setup.yml --ask-become-pass
