@@ -92,6 +92,8 @@
           - apt-offline
           - tree
           - nethogs
+          - unattended-upgrades
+          - apt-listchanges
         state: present
       become: yes
 
@@ -167,3 +169,34 @@
         version: master
       become: no
 
+    - name: Ensure /etc/apt/apt.conf.d/20auto-upgrades has the correct configuration
+      copy:
+        dest: /etc/apt/apt.conf.d/20auto-upgrades
+        content: |
+          APT::Periodic::Update-Package-Lists "1";
+          APT::Periodic::Unattended-Upgrade "1";
+        owner: root
+        group: root
+        mode: "0644"
+      become: yes
+
+    - name: Configure unattended-upgrades non-interactively
+      debconf:
+        name: unattended-upgrades
+        question: "unattended-upgrades/enable_auto_updates"
+        value: "true"
+        vtype: boolean
+      become: yes
+
+    - name: Reconfigure unattended-upgrades with noninteractive mode
+      command: dpkg-reconfigure -f noninteractive unattended-upgrades
+      args:
+        creates: /var/log/unattended-upgrades
+      become: yes
+
+    - name: Restart "unattended-upgrades" service if present
+      systemd:
+        name: unattended-upgrades
+        state: restarted
+        enabled: yes
+      become: yes
