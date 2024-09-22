@@ -16,7 +16,6 @@ fi
 sudo apt update
 sudo apt install ansible -y
 ansible-playbook setup.yml --ask-become-pass
-echo
 echo "Done"
 echo
 echo "Do the following manually:"
@@ -24,4 +23,3 @@ echo "  - Start UFW"
 echo "  - Edit .zshrc to include plugins"
 echo "  - Add .hushlogin file"
 echo "  - Remove /etc/motd"
-echo
