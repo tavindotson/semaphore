@@ -15,6 +15,15 @@
       private: no
 
   tasks:
+    - name: Ensure .ssh directory exists
+      ansible.builtin.file:
+        path: "/home/{{ user }}/.ssh"
+        state: directory
+        mode: "0700"
+        owner: "{{ user }}"
+        group: "{{ user }}"
+      become: yes
+
     - name: Ensure SSH keys exist by running ssh-keygen
       ansible.builtin.openssh_keypair:
         path: "/home/{{ user }}/.ssh/id_rsa"
@@ -51,18 +60,6 @@
       loop: "{{ github_ssh_keys_response.json }}"
       become: no
 
-    - name: Create .hushlogin to disable system message on login
-      ansible.builtin.file:
-        path: "/home/{{ user }}/.hushlogin"
-        state: touch
-      become: no
-
-    - name: Remove /etc/motd to prevent message of the day display
-      ansible.builtin.file:
-        path: /etc/motd
-        state: absent
-      become: yes
-
     - name: Configure sudoers file for current user
       ansible.builtin.copy:
         dest: "/etc/sudoers.d/{{ user }}"
@@ -92,6 +89,10 @@
           - python-is-python3
           - python3-pip
           - python3-venv
+          - apt-offline
+          - tree
+          - nethogs
+          - unattended-upgrades
         state: present
       become: yes
 
@@ -122,11 +123,6 @@
         - ssh
         - http
         - https
-      become: yes
-
-    - name: Enable UFW
-      ufw:
-        state: enabled
       become: yes
 
     - name: Configure SSHD to tighten security
@@ -171,3 +167,44 @@
         dest: /home/{{ user }}/.oh-my-zsh/custom/plugins/zsh-autosuggestions
         version: master
       become: no
+
+    - name: Configure unattended-upgrades
+      copy:
+        dest: /etc/apt/apt.conf.d/50unattended-upgrades
+        content: |
+          // Automatically upgrade packages from these origins
+          Unattended-Upgrade::Origins-Pattern {
+            "o=Debian,n=stable";
+            "o=Debian,n=stable-updates";
+            "o=Debian,n=stable-security";
+            "o=Debian,n=stable-proposed-updates";
+          };
+
+          // Automatically reboot when necessary
+          Unattended-Upgrade::Automatic-Reboot "true";
+          Unattended-Upgrade::Automatic-Reboot-Time "02:00";
+
+          // Remove unused dependency packages
+          Unattended-Upgrade::Remove-Unused-Dependencies "true";
+
+          // Send mail to root when updates require a reboot
+          Unattended-Upgrade::Mail "root";
+          Unattended-Upgrade::MailOnlyOnError "true";
+      become: true
+
+    - name: Enable periodic updates
+      copy:
+        dest: /etc/apt/apt.conf.d/20auto-upgrades
+        content: |
+          APT::Periodic::Update-Package-Lists "1";
+          APT::Periodic::Download-Upgradeable-Packages "1";
+          APT::Periodic::AutocleanInterval "7";
+          APT::Periodic::Unattended-Upgrade "1";
+      become: true
+
+    - name: Restart the unattended-upgrades service
+      systemd:
+        name: unattended-upgrades
+        state: restarted
+        enabled: true
+      become: true
