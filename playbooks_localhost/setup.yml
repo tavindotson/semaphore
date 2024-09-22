@@ -92,7 +92,6 @@
           - apt-offline
           - tree
           - nethogs
-          - unattended-upgrades
         state: present
       become: yes
 
@@ -168,43 +167,3 @@
         version: master
       become: no
 
-    - name: Configure unattended-upgrades
-      copy:
-        dest: /etc/apt/apt.conf.d/50unattended-upgrades
-        content: |
-          // Automatically upgrade packages from these origins
-          Unattended-Upgrade::Origins-Pattern {
-            "o=Debian,n=stable";
-            "o=Debian,n=stable-updates";
-            "o=Debian,n=stable-security";
-            "o=Debian,n=stable-proposed-updates";
-          };
-
-          // Automatically reboot when necessary
-          Unattended-Upgrade::Automatic-Reboot "true";
-          Unattended-Upgrade::Automatic-Reboot-Time "02:00";
-
-          // Remove unused dependency packages
-          Unattended-Upgrade::Remove-Unused-Dependencies "true";
-
-          // Send mail to root when updates require a reboot
-          Unattended-Upgrade::Mail "root";
-          Unattended-Upgrade::MailOnlyOnError "true";
-      become: true
-
-    - name: Enable periodic updates
-      copy:
-        dest: /etc/apt/apt.conf.d/20auto-upgrades
-        content: |
-          APT::Periodic::Update-Package-Lists "1";
-          APT::Periodic::Download-Upgradeable-Packages "1";
-          APT::Periodic::AutocleanInterval "7";
-          APT::Periodic::Unattended-Upgrade "1";
-      become: true
-
-    - name: Restart the unattended-upgrades service
-      systemd:
-        name: unattended-upgrades
-        state: restarted
-        enabled: true
-      become: true
